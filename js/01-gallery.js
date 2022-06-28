@@ -5,6 +5,7 @@ import { galleryItems } from "./gallery-items.js";
 const galleryEl = document.querySelector(".gallery");
 makeItemsGallery(galleryItems);
 galleryEl.addEventListener("click", onImageClick);
+let instance = {};
 
 function makeItemsGallery(galleryItems) {
   const galleryMarkup = galleryItems
@@ -32,20 +33,43 @@ function onImageClick(event) {
   openModal(srcLargeImage);
 }
 function openModal(image) {
-  const instance = basicLightbox.create(
+  instance = basicLightbox.create(
     `
-    <img src="${image}" width="800" height="600">
+    <img src="${image}" width="800" height="600">;
 `,
     {
       closable: false,
       onShow: (instance) => {
-        document.onkeydown = (event) => {
-          if (event.key === "Escape") {
-            instance.close(() => (document.onkeydown = null));
-          }
-        };
+        window.addEventListener("keydown", onKeypress);
+      },
+      onClose: (instance) => {
+        window.removeEventListener("keydown", onKeypress);
       },
     }
   );
   instance.show();
 }
+function onKeypress(event) {
+  console.log(event.key);
+  if (event.key === "Escape") {
+    instance.close();
+  }
+}
+// function openModal(image) {
+//   const instance = basicLightbox.create(
+//     `
+//     <img src="${image}" width="800" height="600">
+// `,
+//     {
+//       closable: false,
+//       onShow: (instance) => {
+//         document.onkeydown = (event) => {
+//           if (event.key === "Escape") {
+//             instance.close(() => (document.onkeydown = null));
+//           }
+//         };
+//       },
+//     }
+//   );
+//   instance.show();
+// }
