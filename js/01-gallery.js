@@ -3,11 +3,25 @@ import { galleryItems } from "./gallery-items.js";
 // Change code below this line
 
 const galleryEl = document.querySelector(".gallery");
-makeItemsGallery(galleryItems);
+makeItemsGalleryEl(galleryItems);
 galleryEl.addEventListener("click", onImageClick);
-let instance = {};
+const instance = basicLightbox.create(
+  `
+    <img src="" width="800" height="600">;
+    
+`,
+  {
+    closable: false,
+    onShow: (instance) => {
+      window.addEventListener("keydown", onKeypress);
+    },
+    onClose: (instance) => {
+      window.removeEventListener("keydown", onKeypress);
+    },
+  }
+);
 
-function makeItemsGallery(galleryItems) {
+function makeItemsGalleryEl(galleryItems) {
   const galleryMarkup = galleryItems
     .map(({ preview, original, description }) => {
       return `<div class="gallery__item">
@@ -29,47 +43,13 @@ function onImageClick(event) {
   if (event.target.nodeName !== "IMG") {
     return;
   }
-  const srcLargeImage = event.target.dataset.source;
-  openModal(srcLargeImage);
-}
-function openModal(image) {
-  instance = basicLightbox.create(
-    `
-    <img src="${image}" width="800" height="600">;
-`,
-    {
-      closable: false,
-      onShow: (instance) => {
-        window.addEventListener("keydown", onKeypress);
-      },
-      onClose: (instance) => {
-        window.removeEventListener("keydown", onKeypress);
-      },
-    }
-  );
+  instance.element().querySelector("img").src = event.target.dataset.source;
   instance.show();
 }
+
 function onKeypress(event) {
   console.log(event.key);
   if (event.key === "Escape") {
     instance.close();
   }
 }
-// function openModal(image) {
-//   const instance = basicLightbox.create(
-//     `
-//     <img src="${image}" width="800" height="600">
-// `,
-//     {
-//       closable: false,
-//       onShow: (instance) => {
-//         document.onkeydown = (event) => {
-//           if (event.key === "Escape") {
-//             instance.close(() => (document.onkeydown = null));
-//           }
-//         };
-//       },
-//     }
-//   );
-//   instance.show();
-// }
